@@ -1,10 +1,12 @@
 # 11ElevenReader Valence Tracker
 
+_Warning: this is work-in-progress._
+
 The purpose of this app is to add valence tracking to the 11ElevenReader web app, for the purposes of experiments in collective intelligence and group sensemaking.
 
 ## Features
 
-- [ ] Minimal detection of active word.
+- [x] Minimal detection of active word.
 - [ ] Desktop valence tracker
 - [ ] Paired mobile valence tracking via QR + websockets
 - [ ] Import/Export of valence trace
