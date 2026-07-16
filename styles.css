@@ -3,16 +3,144 @@
     top: 20px;
     right: 20px;
 
-    z-index: 99999999;
+    width: 170px;
 
-    background: rgba(0,0,0,.85);
+    z-index: 2147483647;
+
+    background: rgba(18,20,29,.95);
+    color: #eceafb;
+
+    font-family: system-ui,-apple-system,sans-serif;
+    font-size: 16px;
+
+    border: 1px solid #2b2f42;
+    border-radius: 12px;
+
+    padding: 14px;
+
+    box-shadow: 0 12px 30px rgba(0,0,0,.45);
+
+    pointer-events: auto;
+}
+
+#vtWord {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 14px;
+
+    overflow-wrap: anywhere;
+}
+
+#vtButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.vtButton {
+    background: #2c3048;
     color: white;
 
-    font-family: sans-serif;
-    font-size: 18px;
-
-    padding: 10px 14px;
+    border: none;
     border-radius: 8px;
 
-    pointer-events: none;
+    padding: 8px 10px;
+
+    cursor: pointer;
+
+    font-size: 15px;
+    text-align: left;
+
+    transition: background .15s;
+}
+
+.vtButton:hover {
+    background: #3a3f5d;
+}
+
+.vtButton.active {
+    background: rgb(74,192,120);
+    color: black;
+}
+
+.vtButton:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+#vtAxis {
+    display: none;
+
+    position: relative;
+
+    margin-top: 16px;
+
+    height: 220px;
+    border-radius: 10px;
+
+    border: 1px solid #2b2f42;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgb(74,192,120) 0%,
+            rgb(118,122,150) 50%,
+            rgb(227,86,86) 100%
+        );
+
+    overflow: hidden;
+}
+
+#vtAxis.visible {
+    display: block;
+}
+
+#vtZero {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top: 50%;
+
+    height: 1px;
+
+    background: rgba(255,255,255,.25);
+}
+
+#vtMarker {
+    position: absolute;
+
+    left: -3px;
+    right: -3px;
+
+    height: 3px;
+
+    background: white;
+
+    box-shadow:
+        0 0 0 2px rgba(0,0,0,.5),
+        0 0 10px white;
+
+    top: 50%;
+}
+
+#vtPlus,
+#vtMinus {
+    position: absolute;
+
+    right: 6px;
+
+    font-size: 10px;
+    font-weight: bold;
+
+    color: rgba(0,0,0,.7);
+}
+
+#vtPlus {
+    top: 6px;
+}
+
+#vtMinus {
+    bottom: 6px;
 }

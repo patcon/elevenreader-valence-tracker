@@ -1,30 +1,65 @@
-console.log("=== ElevenReader Valence Tracker loaded ===");
+console.log("=== ElevenReader Valence Tracker ===");
 
-function makeOverlay() {
+// -----------------------------------------------------------------------------
+// UI
+// -----------------------------------------------------------------------------
 
-    const div = document.createElement("div");
-    div.id = "wordTrackerOverlay";
-    div.textContent = "Waiting...";
+const overlay = document.createElement("div");
+overlay.id = "wordTrackerOverlay";
 
-    document.body.appendChild(div);
+overlay.innerHTML = `
+    <div id="vtWord">Waiting...</div>
 
-    console.log("Overlay inserted.");
+    <div id="vtButtons">
+        <button id="vtDesktop" class="vtButton">
+            🖱 Desktop
+        </button>
 
-    return div;
+        <button id="vtMobile" class="vtButton" disabled>
+            📱 Mobile
+        </button>
+    </div>
+
+    <div id="vtAxis">
+        <div id="vtPlus">+1</div>
+        <div id="vtZero"></div>
+        <div id="vtMinus">−1</div>
+        <div id="vtMarker"></div>
+    </div>
+`;
+
+document.body.appendChild(overlay);
+
+const wordLabel = document.getElementById("vtWord");
+const desktopButton = document.getElementById("vtDesktop");
+const axis = document.getElementById("vtAxis");
+const marker = document.getElementById("vtMarker");
+
+// -----------------------------------------------------------------------------
+// Active word tracking
+// -----------------------------------------------------------------------------
+
+let currentWord = "";
+let currentOffset = "";
+
+function updateWord(el) {
+
+    currentWord = el.textContent.trim();
+    currentOffset = el.getAttribute("c") || "";
+
+    wordLabel.textContent = currentWord;
+
+    console.log("WORD:", currentWord, currentOffset);
 }
-
-const overlay = makeOverlay();
-
-let previousElement = null;
 
 const observer = new MutationObserver((mutations) => {
 
-    for (const mutation of mutations) {
+    for (const m of mutations) {
 
-        if (mutation.type !== "attributes")
+        if (m.type !== "attributes")
             continue;
 
-        const el = mutation.target;
+        const el = m.target;
 
         if (!(el instanceof HTMLElement))
             continue;
@@ -32,17 +67,7 @@ const observer = new MutationObserver((mutations) => {
         if (!el.classList.contains("active"))
             continue;
 
-        if (el === previousElement)
-            continue;
-
-        previousElement = el;
-
-        const word = el.textContent.trim();
-        const offset = el.getAttribute("c");
-
-        overlay.textContent = word;
-
-        console.log("ACTIVE:", word, offset);
+        updateWord(el);
     }
 
 });
@@ -53,4 +78,87 @@ observer.observe(document.body, {
     attributeFilter: ["class"]
 });
 
-console.log("Mutation observer started.");
+// Catch an already-active word when we load.
+
+const initial = document.querySelector("span.active");
+
+if (initial)
+    updateWord(initial);
+
+// -----------------------------------------------------------------------------
+// Pointer Lock valence capture
+// -----------------------------------------------------------------------------
+
+let valence = 0;
+
+const sensitivity = 0.004;
+
+function clamp(v) {
+    return Math.max(-1, Math.min(1, v));
+}
+
+function redrawMarker() {
+
+    marker.style.top = ((1 - valence) / 2 * 100) + "%";
+}
+
+function onMove(e) {
+
+    valence = clamp(
+        valence - e.movementY * sensitivity
+    );
+
+    redrawMarker();
+
+    console.log({
+        word: currentWord,
+        offset: currentOffset,
+        valence: Number(valence.toFixed(3)),
+        t: performance.now()
+    });
+
+}
+
+// -----------------------------------------------------------------------------
+// Capture lifecycle
+// -----------------------------------------------------------------------------
+
+desktopButton.addEventListener("click", () => {
+
+    overlay.requestPointerLock();
+
+});
+
+document.addEventListener("pointerlockchange", () => {
+
+    const active = document.pointerLockElement === overlay;
+
+    if (active) {
+
+        axis.classList.add("visible");
+
+        desktopButton.textContent = "🖱 Capturing";
+        desktopButton.classList.add("active");
+
+        document.addEventListener("mousemove", onMove);
+
+    } else {
+
+        axis.classList.remove("visible");
+
+        desktopButton.textContent = "🖱 Desktop";
+        desktopButton.classList.remove("active");
+
+        document.removeEventListener("mousemove", onMove);
+
+    }
+
+});
+
+// -----------------------------------------------------------------------------
+// Initial UI
+// -----------------------------------------------------------------------------
+
+redrawMarker();
+
+console.log("Tracker ready.");
