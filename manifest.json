@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "ElevenReader Word Tracker",
+  "version": "0.1",
+
+  "description": "Tracks the currently highlighted word in ElevenReader.",
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://elevenreader.io/reader/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
