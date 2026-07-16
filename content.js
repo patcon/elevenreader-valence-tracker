@@ -35,6 +35,14 @@ const desktopButton = document.getElementById("vtDesktop");
 const axis = document.getElementById("vtAxis");
 const marker = document.getElementById("vtMarker");
 
+function focusPlayButton() {
+
+    const playButton = document.querySelector('button[aria-label="Play"], button[aria-label="Pause"]');
+
+    if (playButton)
+        playButton.focus();
+}
+
 // -----------------------------------------------------------------------------
 // Active word tracking
 // -----------------------------------------------------------------------------
@@ -142,6 +150,8 @@ document.addEventListener("pointerlockchange", () => {
 
         document.addEventListener("mousemove", onMove);
 
+        focusPlayButton();
+
     } else {
 
         axis.classList.remove("visible");
@@ -150,6 +160,8 @@ document.addEventListener("pointerlockchange", () => {
         desktopButton.classList.remove("active");
 
         document.removeEventListener("mousemove", onMove);
+
+        focusPlayButton();
 
     }
 
