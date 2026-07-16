@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "ElevenReader Word Tracker",
+  "name": "ElevenReader Valence Tracker",
   "version": "0.1",
 
-  "description": "Tracks the currently highlighted word in ElevenReader.",
+  "description": "Tracks reader valence in ElevenReader.",
 
   "content_scripts": [
     {
