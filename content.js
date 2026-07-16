@@ -1,41 +1,51 @@
-console.log("Word tracker loaded.");
+console.log("=== ElevenReader Valence Tracker loaded ===");
 
-const overlay = document.createElement("div");
-overlay.id = "wordTrackerOverlay";
-overlay.textContent = "...";
-document.body.appendChild(overlay);
+function makeOverlay() {
 
-let previousWord = null;
+    const div = document.createElement("div");
+    div.id = "wordTrackerOverlay";
+    div.textContent = "Waiting...";
 
-function currentWord() {
-    return document.querySelector("span.active");
+    document.body.appendChild(div);
+
+    console.log("Overlay inserted.");
+
+    return div;
 }
 
-function update() {
+const overlay = makeOverlay();
 
-    const active = currentWord();
+let previousElement = null;
 
-    if (!active)
-        return;
+const observer = new MutationObserver((mutations) => {
 
-    if (active === previousWord)
-        return;
+    for (const mutation of mutations) {
 
-    previousWord = active;
+        if (mutation.type !== "attributes")
+            continue;
 
-    const word = active.textContent.trim();
-    const offset = active.getAttribute("c");
+        const el = mutation.target;
 
-    overlay.textContent = word;
+        if (!(el instanceof HTMLElement))
+            continue;
 
-    console.log({
-        word,
-        offset,
-        time: Date.now()
-    });
-}
+        if (!el.classList.contains("active"))
+            continue;
 
-const observer = new MutationObserver(update);
+        if (el === previousElement)
+            continue;
+
+        previousElement = el;
+
+        const word = el.textContent.trim();
+        const offset = el.getAttribute("c");
+
+        overlay.textContent = word;
+
+        console.log("ACTIVE:", word, offset);
+    }
+
+});
 
 observer.observe(document.body, {
     subtree: true,
@@ -43,4 +53,4 @@ observer.observe(document.body, {
     attributeFilter: ["class"]
 });
 
-update();
+console.log("Mutation observer started.");
