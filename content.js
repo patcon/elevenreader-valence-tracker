@@ -8,6 +8,12 @@ const overlay = document.createElement("div");
 overlay.id = "wordTrackerOverlay";
 
 overlay.innerHTML = `
+    <div id="vtFinePrint">
+        <button id="vtExport" class="vtIconButton" aria-label="Export tracking data" title="Export tracking data">⬇</button>
+        <button id="vtImport" class="vtIconButton" aria-label="Import tracking data" title="Import tracking data">⬆</button>
+        <input id="vtImportFile" type="file" accept="application/json" hidden>
+    </div>
+
     <div id="vtWord">Waiting...</div>
 
     <div id="vtButtons">
@@ -34,6 +40,9 @@ const wordLabel = document.getElementById("vtWord");
 const desktopButton = document.getElementById("vtDesktop");
 const axis = document.getElementById("vtAxis");
 const marker = document.getElementById("vtMarker");
+const exportButton = document.getElementById("vtExport");
+const importButton = document.getElementById("vtImport");
+const importFile = document.getElementById("vtImportFile");
 
 function focusPlayButton() {
 
@@ -49,6 +58,23 @@ function focusPlayButton() {
 
 let currentWord = "";
 let currentOffset = "";
+
+let samples = [];
+
+const PENDING_IMPORT_KEY = "vtPendingImport";
+
+const pendingImport = sessionStorage.getItem(PENDING_IMPORT_KEY);
+
+if (pendingImport) {
+
+    sessionStorage.removeItem(PENDING_IMPORT_KEY);
+
+    const data = JSON.parse(pendingImport);
+
+    samples = data.samples || [];
+
+    console.log(`Imported ${samples.length} sample(s) recorded at ${data.url}`);
+}
 
 function updateWord(el) {
 
@@ -118,14 +144,85 @@ function onMove(e) {
 
     redrawMarker();
 
-    console.log({
+    const sample = {
         word: currentWord,
         offset: currentOffset,
         valence: Number(valence.toFixed(3)),
         t: performance.now()
-    });
+    };
+
+    samples.push(sample);
+
+    console.log(sample);
 
 }
+
+// -----------------------------------------------------------------------------
+// Import / export
+// -----------------------------------------------------------------------------
+
+exportButton.addEventListener("click", () => {
+
+    if (samples.length === 0) {
+
+        alert("Nothing to export yet — no valence data has been recorded.");
+
+        return;
+    }
+
+    const data = {
+        url: location.href,
+        exportedAt: new Date().toISOString(),
+        samples
+    };
+
+    const blob = new Blob(
+        [JSON.stringify(data, null, 2)],
+        { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "valence-tracking.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+});
+
+importButton.addEventListener("click", () => {
+
+    importFile.click();
+
+});
+
+importFile.addEventListener("change", async () => {
+
+    const file = importFile.files[0];
+
+    if (!file)
+        return;
+
+    const data = JSON.parse(await file.text());
+
+    importFile.value = "";
+
+    if (data.url && data.url !== location.href) {
+
+        sessionStorage.setItem(PENDING_IMPORT_KEY, JSON.stringify(data));
+
+        location.href = data.url;
+
+        return;
+    }
+
+    samples = data.samples || [];
+
+    console.log(`Imported ${samples.length} sample(s) recorded at ${data.url}`);
+
+});
 
 // -----------------------------------------------------------------------------
 // Capture lifecycle
