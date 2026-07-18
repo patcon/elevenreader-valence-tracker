@@ -1,4 +1,5 @@
 import "./style.css";
+import { WordValenceStore, paintElement } from "./word-valence-store";
 
 interface Sample {
   word: string;
@@ -79,8 +80,11 @@ export default defineContentScript({
 
     let currentWord = "";
     let currentOffset = "";
+    let currentSpan: HTMLElement | null = null;
 
     let samples: Sample[] = [];
+
+    const wordValence = new WordValenceStore();
 
     const PENDING_IMPORT_KEY = "vtPendingImport";
 
@@ -101,6 +105,7 @@ export default defineContentScript({
 
         currentWord = el.textContent?.trim() || "";
         currentOffset = el.getAttribute("c") || "";
+        currentSpan = el;
 
         wordLabel.textContent = currentWord;
 
@@ -173,6 +178,11 @@ export default defineContentScript({
         };
 
         samples.push(sample);
+
+        wordValence.set(currentOffset, valence);
+
+        if (currentSpan)
+            paintElement(currentSpan, valence);
 
         console.log(sample);
 
