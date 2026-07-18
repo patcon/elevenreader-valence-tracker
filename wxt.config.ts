@@ -5,4 +5,7 @@ export default defineConfig({
     name: "ElevenReader Valence Tracker",
     description: "Tracks reader valence in ElevenReader.",
   },
+  webExt: {
+    disabled: true,
+  },
 });
