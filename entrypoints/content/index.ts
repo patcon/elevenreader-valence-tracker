@@ -98,6 +98,9 @@ export default defineContentScript({
 
         samples = data.samples || [];
 
+        wordValence.rebuildFromSamples(samples);
+        wordValence.applyAll(document);
+
         console.log(`Imported ${samples.length} sample(s) recorded at ${data.url}`);
     }
 
@@ -250,6 +253,9 @@ export default defineContentScript({
         }
 
         samples = data.samples || [];
+
+        wordValence.rebuildFromSamples(samples);
+        wordValence.applyAll(document);
 
         console.log(`Imported ${samples.length} sample(s) recorded at ${data.url}`);
 
