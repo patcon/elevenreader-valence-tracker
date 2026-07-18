@@ -20,6 +20,8 @@ This extension is built with [WXT](https://wxt.dev).
 
 1. Clone this repo.
 2. Run `pnpm install`.
-3. For development with hot reload: `pnpm dev` — this launches a browser with the extension loaded.
-4. For a one-off build: `pnpm build`, then open `chrome://extensions/`, click "Load unpacked", and select the generated `.output/chrome-mv3` directory.
+3. Run `pnpm build`.
+4. Open `chrome://extensions/`, click "Load unpacked", and select the generated `.output/chrome-mv3` directory. Reload the extension here after each rebuild.
 5. Visit any article in https://elevenreader.io/reader/library
+
+Note: skip `pnpm dev` — its browser profile isn't logged into Google, which elevenreader.io requires.
