@@ -1,10 +1,11 @@
 import "./style.css";
 import { WordValenceStore, paintElement } from "./word-valence-store";
+import { loadSettings, saveSettings } from "./settings-store";
 
 interface Sample {
   word: string;
   offset: string;
-  valence: number;
+  valence: number | null;
   t: number;
 }
 
@@ -31,10 +32,18 @@ export default defineContentScript({
 
     overlay.innerHTML = `
         <div id="vtFinePrint">
+            <button id="vtSettings" class="vtIconButton" aria-label="Settings" title="Settings">⚙</button>
             <button id="vtExport" class="vtIconButton" aria-label="Export tracking data" title="Export tracking data">⬇</button>
             <button id="vtImport" class="vtIconButton" aria-label="Import tracking data" title="Import tracking data">⬆</button>
             <button id="vtToggle" class="vtIconButton" aria-label="Minimize tracker" title="Minimize tracker">–</button>
             <input id="vtImportFile" type="file" accept="application/json" hidden>
+        </div>
+
+        <div id="vtSettingsPanel">
+            <label class="vtCheckboxRow">
+                <input type="checkbox" id="vtOnlyChanging">
+                Display only changing word valence
+            </label>
         </div>
 
         <div id="vtWord">Waiting...</div>
@@ -67,6 +76,12 @@ export default defineContentScript({
     const importButton = document.getElementById("vtImport") as HTMLButtonElement;
     const importFile = document.getElementById("vtImportFile") as HTMLInputElement;
     const toggleButton = document.getElementById("vtToggle") as HTMLButtonElement;
+    const settingsButton = document.getElementById("vtSettings") as HTMLButtonElement;
+    const settingsPanel = document.getElementById("vtSettingsPanel") as HTMLElement;
+    const onlyChangingCheckbox = document.getElementById("vtOnlyChanging") as HTMLInputElement;
+
+    let settings = loadSettings();
+    onlyChangingCheckbox.checked = settings.onlyChangingValence;
 
     function focusPlayButton() {
 
@@ -101,15 +116,30 @@ export default defineContentScript({
         samples = data.samples || [];
 
         wordValence.rebuildFromSamples(samples);
-        wordValence.applyAll(document);
+        wordValence.renderAll(document, !settings.onlyChangingValence);
 
         console.log(`Imported ${samples.length} sample(s) recorded at ${data.url}`);
     }
 
     function updateWord(el: HTMLElement) {
 
-        currentWord = el.textContent?.trim() || "";
-        currentOffset = el.getAttribute("c") || "";
+        const newOffset = el.getAttribute("c") || "";
+
+        if (newOffset === currentOffset)
+            return;
+
+        const newWord = el.textContent?.trim() || "";
+
+        wordValence.advance(newOffset, newWord);
+
+        if (currentOffset) // finalize the word we're leaving, now that it's fixed
+            wordValence.paintOffset(document, currentOffset, !settings.onlyChangingValence);
+
+        if (wordValence.get(newOffset) === null) // just registered as heard, no movement yet
+            samples.push({ word: newWord, offset: newOffset, valence: null, t: performance.now() });
+
+        currentWord = newWord;
+        currentOffset = newOffset;
         currentSpan = el;
 
         wordLabel.textContent = currentWord;
@@ -257,9 +287,29 @@ export default defineContentScript({
         samples = data.samples || [];
 
         wordValence.rebuildFromSamples(samples);
-        wordValence.applyAll(document);
+        wordValence.renderAll(document, !settings.onlyChangingValence);
 
         console.log(`Imported ${samples.length} sample(s) recorded at ${data.url}`);
+
+    });
+
+    // -----------------------------------------------------------------------------
+    // Settings
+    // -----------------------------------------------------------------------------
+
+    settingsButton.addEventListener("click", () => {
+
+        settingsPanel.classList.toggle("visible");
+
+    });
+
+    onlyChangingCheckbox.addEventListener("change", () => {
+
+        settings = { ...settings, onlyChangingValence: onlyChangingCheckbox.checked };
+
+        saveSettings(settings);
+
+        wordValence.renderAll(document, !settings.onlyChangingValence);
 
     });
 

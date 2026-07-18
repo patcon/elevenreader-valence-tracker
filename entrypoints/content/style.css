@@ -45,7 +45,9 @@
 #wordTrackerOverlay.collapsed #vtButtons,
 #wordTrackerOverlay.collapsed #vtAxis,
 #wordTrackerOverlay.collapsed #vtExport,
-#wordTrackerOverlay.collapsed #vtImport {
+#wordTrackerOverlay.collapsed #vtImport,
+#wordTrackerOverlay.collapsed #vtSettings,
+#wordTrackerOverlay.collapsed #vtSettingsPanel {
     display: none;
 }
 
@@ -69,6 +71,35 @@
 .vtIconButton:hover {
     opacity: 1;
     color: #eceafb;
+}
+
+#vtSettingsPanel {
+    display: none;
+
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+
+    border-bottom: 1px solid #2b2f42;
+}
+
+#vtSettingsPanel.visible {
+    display: block;
+}
+
+.vtCheckboxRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    color: #eceafb;
+
+    font-size: 13px;
+
+    cursor: pointer;
+}
+
+.vtCheckboxRow input {
+    cursor: pointer;
 }
 
 #vtWord {
