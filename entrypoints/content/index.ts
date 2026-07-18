@@ -39,13 +39,6 @@ export default defineContentScript({
             <input id="vtImportFile" type="file" accept="application/json" hidden>
         </div>
 
-        <div id="vtSettingsPanel">
-            <label class="vtCheckboxRow">
-                <input type="checkbox" id="vtOnlyChanging">
-                Display only changing word valence
-            </label>
-        </div>
-
         <div id="vtWord">Waiting...</div>
 
         <div id="vtButtons">
@@ -68,6 +61,27 @@ export default defineContentScript({
 
     document.body.appendChild(overlay);
 
+    const settingsModal = document.createElement("div");
+    settingsModal.id = "vtSettingsModal";
+
+    settingsModal.innerHTML = `
+        <div id="vtSettingsBackdrop"></div>
+        <div id="vtSettingsDialog" role="dialog" aria-modal="true" aria-label="Settings">
+            <div id="vtSettingsHeader">
+                <span>Settings</span>
+                <button id="vtSettingsClose" class="vtIconButton" aria-label="Close settings" title="Close settings">✕</button>
+            </div>
+            <div id="vtSettingsBody">
+                <label class="vtCheckboxRow">
+                    <input type="checkbox" id="vtOnlyChanging">
+                    Display only changing word valence
+                </label>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(settingsModal);
+
     const wordLabel = document.getElementById("vtWord") as HTMLElement;
     const desktopButton = document.getElementById("vtDesktop") as HTMLButtonElement;
     const axis = document.getElementById("vtAxis") as HTMLElement;
@@ -77,7 +91,8 @@ export default defineContentScript({
     const importFile = document.getElementById("vtImportFile") as HTMLInputElement;
     const toggleButton = document.getElementById("vtToggle") as HTMLButtonElement;
     const settingsButton = document.getElementById("vtSettings") as HTMLButtonElement;
-    const settingsPanel = document.getElementById("vtSettingsPanel") as HTMLElement;
+    const settingsBackdrop = document.getElementById("vtSettingsBackdrop") as HTMLElement;
+    const settingsClose = document.getElementById("vtSettingsClose") as HTMLButtonElement;
     const onlyChangingCheckbox = document.getElementById("vtOnlyChanging") as HTMLInputElement;
 
     let settings = loadSettings();
@@ -297,9 +312,22 @@ export default defineContentScript({
     // Settings
     // -----------------------------------------------------------------------------
 
-    settingsButton.addEventListener("click", () => {
+    function openSettings() {
+        settingsModal.classList.add("visible");
+    }
 
-        settingsPanel.classList.toggle("visible");
+    function closeSettings() {
+        settingsModal.classList.remove("visible");
+    }
+
+    settingsButton.addEventListener("click", openSettings);
+    settingsClose.addEventListener("click", closeSettings);
+    settingsBackdrop.addEventListener("click", closeSettings);
+
+    document.addEventListener("keydown", (e) => {
+
+        if (e.key === "Escape" && settingsModal.classList.contains("visible"))
+            closeSettings();
 
     });
 

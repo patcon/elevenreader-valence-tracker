@@ -46,8 +46,7 @@
 #wordTrackerOverlay.collapsed #vtAxis,
 #wordTrackerOverlay.collapsed #vtExport,
 #wordTrackerOverlay.collapsed #vtImport,
-#wordTrackerOverlay.collapsed #vtSettings,
-#wordTrackerOverlay.collapsed #vtSettingsPanel {
+#wordTrackerOverlay.collapsed #vtSettings {
     display: none;
 }
 
@@ -73,17 +72,62 @@
     color: #eceafb;
 }
 
-#vtSettingsPanel {
+#vtSettingsModal {
     display: none;
-
-    margin-bottom: 10px;
-    padding-bottom: 10px;
-
-    border-bottom: 1px solid #2b2f42;
 }
 
-#vtSettingsPanel.visible {
+#vtSettingsModal.visible {
     display: block;
+}
+
+#vtSettingsBackdrop {
+    position: fixed;
+    inset: 0;
+
+    z-index: 2147483646;
+
+    background: rgba(0,0,0,.5);
+}
+
+#vtSettingsDialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 260px;
+
+    z-index: 2147483647;
+
+    background: rgba(18,20,29,.98);
+    color: #eceafb;
+
+    font-family: system-ui,-apple-system,sans-serif;
+    font-size: 16px;
+
+    border: 1px solid #2b2f42;
+    border-radius: 12px;
+
+    padding: 16px;
+
+    box-shadow: 0 12px 30px rgba(0,0,0,.45);
+}
+
+#vtSettingsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 14px;
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+#vtSettingsBody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .vtCheckboxRow {
