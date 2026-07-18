@@ -1,7 +1,7 @@
 #wordTrackerOverlay {
     position: fixed;
-    top: 20px;
-    right: 20px;
+    top: 12px;
+    right: 60px;
 
     width: 170px;
 
@@ -29,6 +29,24 @@
     gap: 4px;
 
     margin-bottom: 6px;
+}
+
+#wordTrackerOverlay.collapsed {
+    width: auto;
+    padding: 8px;
+}
+
+#wordTrackerOverlay.collapsed #vtFinePrint {
+    margin-bottom: 0;
+    justify-content: center;
+}
+
+#wordTrackerOverlay.collapsed #vtWord,
+#wordTrackerOverlay.collapsed #vtButtons,
+#wordTrackerOverlay.collapsed #vtAxis,
+#wordTrackerOverlay.collapsed #vtExport,
+#wordTrackerOverlay.collapsed #vtImport {
+    display: none;
 }
 
 .vtIconButton {

@@ -33,6 +33,7 @@ export default defineContentScript({
         <div id="vtFinePrint">
             <button id="vtExport" class="vtIconButton" aria-label="Export tracking data" title="Export tracking data">⬇</button>
             <button id="vtImport" class="vtIconButton" aria-label="Import tracking data" title="Import tracking data">⬆</button>
+            <button id="vtToggle" class="vtIconButton" aria-label="Minimize tracker" title="Minimize tracker">–</button>
             <input id="vtImportFile" type="file" accept="application/json" hidden>
         </div>
 
@@ -65,6 +66,7 @@ export default defineContentScript({
     const exportButton = document.getElementById("vtExport") as HTMLButtonElement;
     const importButton = document.getElementById("vtImport") as HTMLButtonElement;
     const importFile = document.getElementById("vtImportFile") as HTMLInputElement;
+    const toggleButton = document.getElementById("vtToggle") as HTMLButtonElement;
 
     function focusPlayButton() {
 
@@ -258,6 +260,23 @@ export default defineContentScript({
         wordValence.applyAll(document);
 
         console.log(`Imported ${samples.length} sample(s) recorded at ${data.url}`);
+
+    });
+
+    // -----------------------------------------------------------------------------
+    // Collapse / expand
+    // -----------------------------------------------------------------------------
+
+    toggleButton.addEventListener("click", () => {
+
+        const collapsed = overlay.classList.toggle("collapsed");
+
+        toggleButton.textContent = collapsed ? "⛶" : "–";
+
+        const label = collapsed ? "Expand tracker" : "Minimize tracker";
+
+        toggleButton.setAttribute("aria-label", label);
+        toggleButton.title = label;
 
     });
 
