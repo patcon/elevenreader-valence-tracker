@@ -14,7 +14,7 @@ interface ExportedData {
 }
 
 export default defineContentScript({
-  matches: ["https://elevenreader.io/reader/*"],
+  matches: ["https://elevenreader.io/reader/library/*"],
   runAt: "document_idle",
   cssInjectionMode: "manifest",
 
