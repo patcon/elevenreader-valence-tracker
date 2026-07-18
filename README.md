@@ -7,10 +7,10 @@ The purpose of this app is to add valence tracking to the 11ElevenReader web app
 ## Features
 
 - [x] Minimal detection of active word.
-- [ ] Desktop valence tracker
+- [x] Desktop valence tracker
 - [ ] Paired mobile valence tracking via QR + websockets
-- [ ] Import/Export of valence trace
-- [ ] Visualize own valence inline with text
+- [x] Import/Export of valence trace
+- [x] Visualize own valence inline with text
 - [ ] Save valence to database
 - [ ] Visualize aggregate valence
 
